@@ -15,9 +15,10 @@ export declare class LocalCache {
      * @param paths Array of target paths to restore
      * @param primaryKey Primary cache key
      * @param restoreKeys Array of fallback cache keys
+     * @param targetDir Target directory for decompression
      * @returns Restore result, including hit status and used key
      */
-    static restore(paths: string[], primaryKey: string, restoreKeys?: string[]): Promise<{
+    static restore(paths: string[], primaryKey: string, restoreKeys?: string[], targetDir?: string): Promise<{
         cacheHit: boolean;
         restoredKey: string | undefined;
     }>;
