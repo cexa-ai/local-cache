@@ -98,6 +98,31 @@ export async function decompressWithZstd(
       return false
     }
 
+    // 确保目标目录存在
+    if (!fs.existsSync(targetDir)) {
+      debug(`Creating target directory: ${targetDir}`)
+      try {
+        fs.mkdirSync(targetDir, { recursive: true })
+      } catch (err) {
+        error(`Failed to create target directory: ${targetDir}`, err as Error)
+        // 如果无法创建目录，尝试使用当前目录
+        targetDir = process.cwd()
+        info(`Falling back to current directory: ${targetDir}`)
+      }
+    }
+
+    // 检查目标目录的写入权限
+    try {
+      fs.accessSync(targetDir, fs.constants.W_OK)
+      debug(`Write permission confirmed for directory: ${targetDir}`)
+    } catch (err) {
+      error(`No write permission for directory: ${targetDir}`, err as Error)
+      // 如果没有写入权限，尝试使用临时目录
+      const tempDir = process.env.RUNNER_TEMP || '/tmp'
+      targetDir = tempDir
+      info(`Falling back to temp directory: ${targetDir}`)
+    }
+
     // Build tar command
     const tarArgs = [
       '--use-compress-program',
