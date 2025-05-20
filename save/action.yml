@@ -20,4 +20,4 @@ inputs:
 
 runs:
   using: 'node20'
-  main: '../dist/save.js'
+  main: '../dist/save/index.js'

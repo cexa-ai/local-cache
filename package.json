@@ -23,8 +23,11 @@
     "node": ">=20"
   },
   "scripts": {
-    "bundle": "npm run format:write && npm run package",
-    "build": "npx ncc build src/main.ts -o dist --source-map --license licenses.txt --minify",
+    "bundle": "npx run format:write && npx run package",
+    
+    "build:main": "npx ncc build src/main.ts -o dist --source-map --license licenses.txt --minify",
+    "build:save": "npx ncc build src/save.ts -o dist/save --source-map --license licenses.txt --minify",
+    "build:post": "npx ncc build src/restore.ts -o dist/restore --source-map --license licenses.txt --minify",
     "ci-test": "NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 npx jest",
     "coverage": "npx make-coverage-badge --output-path ./badges/coverage.svg",
     "format:write": "npx prettier --write .",

@@ -36,4 +36,4 @@ outputs:
 
 runs:
   using: 'node20'
-  main: '../dist/restore.js'
+  main: '../dist/restore/index.js'
