@@ -1,0 +1,153 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+## Project Naming Conventions
+
+### File Naming Conventions
+
+#### 1. File Naming Rules
+
+* Use **camelCase** for file names, for example:
+
+  * `logger.ts`
+  * `requestLogger.ts`
+  * `searchService.ts`
+  * `userController.ts`
+
+#### 2. Avoid Using `index.ts`
+
+* It is not recommended to use `index.ts` for business-logic files.
+* **Reasons:**
+
+  * Makes it harder to quickly locate specific functionality.
+  * Hinders code navigation.
+  * Can lead to overly large files with unclear responsibilities.
+* **Alternatives:**
+
+  * Use descriptive names that reflect the file’s purpose.
+  * For example:
+
+    * ❌ `src/service/index.ts`
+    * ✅ `src/service/searchService.ts`
+    * ✅ `src/service/userService.ts`
+
+#### 3. Directory Structure
+
+Follow the standard TypeScript Action layout:
+
+```
+├── __tests__/              # Tests directory
+│   ├── unit/               # Unit tests
+│   ├── integration/        # Integration tests
+│   └── fixtures/           # Test data and mocks
+├── src/                    # Source code
+│   ├── cache/              # Core caching logic
+│   │   ├── compression.ts  # Compression handlers
+│   │   ├── local-cache.ts  # Local cache implementation
+│   │   └── utils.ts        # Utility functions
+│   ├── restore.ts          # Cache restore entrypoint
+│   ├── save.ts             # Cache save entrypoint
+│   └── main.ts             # Main entrypoint
+├── action.yml              # Primary Action definition
+├── restore/action.yml      # Restore Action definition
+├── save/action.yml         # Save Action definition
+├── tsconfig.json           # TypeScript configuration
+├── jest.config.js          # Jest test configuration
+└── package.json            # Project dependencies
+```
+
+#### 4. Special File Naming
+
+* **Config files:** use the `.config.ts` suffix
+
+  * e.g., `app.config.ts`
+* **Type definitions:** use the `.types.ts` suffix
+
+  * e.g., `user.types.ts`
+* **Constants:** use the `.constants.ts` suffix
+
+  * e.g., `api.constants.ts`
+
+#### 5. Test File Naming
+
+* Test files should use `.test.ts` or `.spec.ts` suffixes.
+* Test files should match the name of the file they test.
+* For example:
+
+  * The test for `searchService.ts` should be `searchService.test.ts`
+  * The test for `userController.ts` should be `userController.test.ts`
+
+---
+
+### Code Naming Conventions
+
+#### 1. Variable Naming
+
+* Use **camelCase** for variable names.
+* Boolean variables should start with `is`, `has`, `should`, etc.
+* Examples:
+
+  ```typescript
+  const userName = 'John';
+  const isActive = true;
+  const hasPermission = false;
+  ```
+
+#### 2. Function Naming
+
+* Use **camelCase**; functions should start with a verb and clearly express their purpose.
+* Examples:
+
+  ```typescript
+  function getUserById(id: string) { }
+  function calculateTotalPrice() { }
+  function validateInput() { }
+  ```
+
+#### 3. Class Naming
+
+* Use **PascalCase** for class names; start with a noun that clearly describes the entity.
+* Examples:
+
+  ```typescript
+  class UserService { }
+  class DatabaseConnection { }
+  class PaymentProcessor { }
+  ```
+
+#### 4. Interface Naming
+
+* Use **PascalCase** with an `I` prefix.
+* Examples:
+
+  ```typescript
+  interface IUserData { }
+  interface IApiResponse { }
+  interface IConfigOptions { }
+  ```
+
+#### 5. Type Naming
+
+* Use **PascalCase** with a `T` prefix.
+* Examples:
+
+  ```typescript
+  type TUserRole = 'admin' | 'user';
+  type TApiResponse<T> = { data: T; status: number };
+  ```
+
+---
+
+### Best Practices
+
+1. Maintain consistent naming.
+2. Use meaningful names; avoid abbreviations.
+3. Don’t start file or variable names with numbers.
+4. File names should reflect their primary function.
+5. Avoid overly generic names (e.g., `util.ts`, `helper.ts`).
+6. Keep related files together in the same directory.
+7. Avoid excessively long file names, but ensure they remain descriptive.
+8. Remove unused code after refactoring.
+9. Write all in-code comments in English.
