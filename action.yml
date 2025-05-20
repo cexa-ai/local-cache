@@ -56,3 +56,5 @@ outputs:
 runs:
   using: 'node20'
   main: 'dist/index.js'
+  post: 'dist/save.js'
+  post-if: "success()"
