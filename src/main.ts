@@ -44,11 +44,14 @@ async function run(): Promise<void> {
       return
     }
 
+    const workspaceDir = process.env.GITHUB_WORKSPACE || process.cwd()
+
     // Restore cache
     const { cacheHit, restoredKey } = await LocalCache.restore(
       paths,
       key,
-      restoreKeysList
+      restoreKeysList,
+      workspaceDir
     )
     core.setOutput('cache-hit', cacheHit.toString())
     core.setOutput('cache-primary-key', key)
