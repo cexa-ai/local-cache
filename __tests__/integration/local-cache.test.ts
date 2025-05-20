@@ -1,31 +1,34 @@
-import { describe, expect, test, jest } from '@jest/globals';
+import { describe, expect, test, jest, beforeEach } from '@jest/globals';
 import * as fs from 'fs';
-import { LocalCache } from '../../src/cache/local-cache';
+import { LocalCache } from '../../src/cache/localCache';
 import { compressWithZstd, decompressWithZstd } from '../../src/cache/compression';
 import { getCacheFilePath, cacheExists } from '../../src/cache/utils';
 
 // 模拟依赖模块
-jest.mock('../../src/cache/compression');
-jest.mock('../../src/cache/utils');
-jest.mock('fs');
+jest.mock('../../src/cache/compression', () => ({
+  compressWithZstd: jest.fn(),
+  decompressWithZstd: jest.fn()
+}));
 
-// 设置模拟函数的返回值
-const mockCompressWithZstd = compressWithZstd as jest.MockedFunction<typeof compressWithZstd>;
-const mockDecompressWithZstd = decompressWithZstd as jest.MockedFunction<typeof decompressWithZstd>;
-const mockGetCacheFilePath = getCacheFilePath as jest.MockedFunction<typeof getCacheFilePath>;
-const mockCacheExists = cacheExists as jest.MockedFunction<typeof cacheExists>;
-const mockFsExistsSync = fs.existsSync as jest.MockedFunction<typeof fs.existsSync>;
+jest.mock('../../src/cache/utils', () => ({
+  getCacheFilePath: jest.fn(key => `/cache/dir/${key}.tar.zst`),
+  cacheExists: jest.fn()
+}));
+
+jest.mock('fs', () => ({
+  existsSync: jest.fn()
+}));
 
 describe('LocalCache 集成测试', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     
     // 设置默认的模拟返回值
-    mockCompressWithZstd.mockResolvedValue(true);
-    mockDecompressWithZstd.mockResolvedValue(true);
-    mockGetCacheFilePath.mockImplementation(key => `/cache/dir/${key}.tar.zst`);
-    mockCacheExists.mockReturnValue(true);
-    mockFsExistsSync.mockReturnValue(true);
+    compressWithZstd.mockResolvedValue(true);
+    decompressWithZstd.mockResolvedValue(true);
+    getCacheFilePath.mockImplementation(key => `/cache/dir/${key}.tar.zst`);
+    cacheExists.mockReturnValue(true);
+    fs.existsSync.mockReturnValue(true);
   });
 
   describe('save', () => {
@@ -34,15 +37,15 @@ describe('LocalCache 集成测试', () => {
       const key = 'test-cache-key';
       const cachePath = '/cache/dir/test_cache_key.tar.zst';
       
-      mockFsExistsSync.mockReturnValue(true);
-      mockGetCacheFilePath.mockReturnValue(cachePath);
-      mockCompressWithZstd.mockResolvedValue(true);
+      fs.existsSync.mockReturnValue(true);
+      getCacheFilePath.mockReturnValue(cachePath);
+      compressWithZstd.mockResolvedValue(true);
       
       const result = await LocalCache.save(paths, key);
       
       expect(result).toBe(true);
-      expect(mockGetCacheFilePath).toHaveBeenCalledWith(key);
-      expect(mockCompressWithZstd).toHaveBeenCalledWith(cachePath, paths, 3);
+      expect(getCacheFilePath).toHaveBeenCalledWith(key);
+      expect(compressWithZstd).toHaveBeenCalledWith(cachePath, paths, 3);
     });
 
     test('不存在的路径应该被过滤掉', async () => {
@@ -50,27 +53,27 @@ describe('LocalCache 集成测试', () => {
       const key = 'test-cache-key';
       const cachePath = '/cache/dir/test_cache_key.tar.zst';
       
-      mockFsExistsSync.mockImplementation(path => path === '/path/to/cache');
-      mockGetCacheFilePath.mockReturnValue(cachePath);
-      mockCompressWithZstd.mockResolvedValue(true);
+      fs.existsSync.mockImplementation(path => path === '/path/to/cache');
+      getCacheFilePath.mockReturnValue(cachePath);
+      compressWithZstd.mockResolvedValue(true);
       
       const result = await LocalCache.save(paths, key);
       
       expect(result).toBe(true);
-      expect(mockGetCacheFilePath).toHaveBeenCalledWith(key);
-      expect(mockCompressWithZstd).toHaveBeenCalledWith(cachePath, ['/path/to/cache'], 3);
+      expect(getCacheFilePath).toHaveBeenCalledWith(key);
+      expect(compressWithZstd).toHaveBeenCalledWith(cachePath, ['/path/to/cache'], 3);
     });
 
     test('所有路径都不存在时应该跳过保存', async () => {
       const paths = ['/non/existent/path1', '/non/existent/path2'];
       const key = 'test-cache-key';
       
-      mockFsExistsSync.mockReturnValue(false);
+      fs.existsSync.mockReturnValue(false);
       
       const result = await LocalCache.save(paths, key);
       
       expect(result).toBe(false);
-      expect(mockCompressWithZstd).not.toHaveBeenCalled();
+      expect(compressWithZstd).not.toHaveBeenCalled();
     });
 
     test('压缩失败时应该返回失败', async () => {
@@ -78,15 +81,15 @@ describe('LocalCache 集成测试', () => {
       const key = 'test-cache-key';
       const cachePath = '/cache/dir/test_cache_key.tar.zst';
       
-      mockFsExistsSync.mockReturnValue(true);
-      mockGetCacheFilePath.mockReturnValue(cachePath);
-      mockCompressWithZstd.mockResolvedValue(false);
+      fs.existsSync.mockReturnValue(true);
+      getCacheFilePath.mockReturnValue(cachePath);
+      compressWithZstd.mockResolvedValue(false);
       
       const result = await LocalCache.save(paths, key);
       
       expect(result).toBe(false);
-      expect(mockGetCacheFilePath).toHaveBeenCalledWith(key);
-      expect(mockCompressWithZstd).toHaveBeenCalledWith(cachePath, paths, 3);
+      expect(getCacheFilePath).toHaveBeenCalledWith(key);
+      expect(compressWithZstd).toHaveBeenCalledWith(cachePath, paths, 3);
     });
   });
 
@@ -96,16 +99,16 @@ describe('LocalCache 集成测试', () => {
       const key = 'test-cache-key';
       const cachePath = '/cache/dir/test_cache_key.tar.zst';
       
-      mockCacheExists.mockReturnValue(true);
-      mockGetCacheFilePath.mockReturnValue(cachePath);
-      mockDecompressWithZstd.mockResolvedValue(true);
+      cacheExists.mockReturnValue(true);
+      getCacheFilePath.mockReturnValue(cachePath);
+      decompressWithZstd.mockResolvedValue(true);
       
       const result = await LocalCache.restore(paths, key);
       
       expect(result).toEqual({ cacheHit: true, restoredKey: key });
-      expect(mockCacheExists).toHaveBeenCalledWith(key);
-      expect(mockGetCacheFilePath).toHaveBeenCalledWith(key);
-      expect(mockDecompressWithZstd).toHaveBeenCalledWith(cachePath, '/');
+      expect(cacheExists).toHaveBeenCalledWith(key);
+      expect(getCacheFilePath).toHaveBeenCalledWith(key);
+      expect(decompressWithZstd).toHaveBeenCalledWith(cachePath, '/');
     });
 
     test('主键不匹配但备用键匹配时应该成功恢复缓存', async () => {
@@ -114,18 +117,18 @@ describe('LocalCache 集成测试', () => {
       const restoreKeys = ['restore-key1', 'restore-key2'];
       const cachePath = '/cache/dir/restore_key2.tar.zst';
       
-      mockCacheExists.mockImplementation(k => k === 'restore-key2');
-      mockGetCacheFilePath.mockReturnValue(cachePath);
-      mockDecompressWithZstd.mockResolvedValue(true);
+      cacheExists.mockImplementation(k => k === 'restore-key2');
+      getCacheFilePath.mockReturnValue(cachePath);
+      decompressWithZstd.mockResolvedValue(true);
       
       const result = await LocalCache.restore(paths, key, restoreKeys);
       
       expect(result).toEqual({ cacheHit: false, restoredKey: 'restore-key2' });
-      expect(mockCacheExists).toHaveBeenCalledWith(key);
-      expect(mockCacheExists).toHaveBeenCalledWith('restore-key1');
-      expect(mockCacheExists).toHaveBeenCalledWith('restore-key2');
-      expect(mockGetCacheFilePath).toHaveBeenCalledWith('restore-key2');
-      expect(mockDecompressWithZstd).toHaveBeenCalledWith(cachePath, '/');
+      expect(cacheExists).toHaveBeenCalledWith(key);
+      expect(cacheExists).toHaveBeenCalledWith('restore-key1');
+      expect(cacheExists).toHaveBeenCalledWith('restore-key2');
+      expect(getCacheFilePath).toHaveBeenCalledWith('restore-key2');
+      expect(decompressWithZstd).toHaveBeenCalledWith(cachePath, '/');
     });
 
     test('没有匹配的键时应该返回未命中', async () => {
@@ -133,15 +136,15 @@ describe('LocalCache 集成测试', () => {
       const key = 'test-cache-key';
       const restoreKeys = ['restore-key1', 'restore-key2'];
       
-      mockCacheExists.mockReturnValue(false);
+      cacheExists.mockReturnValue(false);
       
       const result = await LocalCache.restore(paths, key, restoreKeys);
       
       expect(result).toEqual({ cacheHit: false, restoredKey: undefined });
-      expect(mockCacheExists).toHaveBeenCalledWith(key);
-      expect(mockCacheExists).toHaveBeenCalledWith('restore-key1');
-      expect(mockCacheExists).toHaveBeenCalledWith('restore-key2');
-      expect(mockDecompressWithZstd).not.toHaveBeenCalled();
+      expect(cacheExists).toHaveBeenCalledWith(key);
+      expect(cacheExists).toHaveBeenCalledWith('restore-key1');
+      expect(cacheExists).toHaveBeenCalledWith('restore-key2');
+      expect(decompressWithZstd).not.toHaveBeenCalled();
     });
   });
 
@@ -149,40 +152,40 @@ describe('LocalCache 集成测试', () => {
     test('主键匹配时应该返回命中', () => {
       const key = 'test-cache-key';
       
-      mockCacheExists.mockReturnValue(true);
+      cacheExists.mockReturnValue(true);
       
       const result = LocalCache.lookup(key);
       
       expect(result).toEqual({ cacheHit: true, matchedKey: key });
-      expect(mockCacheExists).toHaveBeenCalledWith(key);
+      expect(cacheExists).toHaveBeenCalledWith(key);
     });
 
     test('主键不匹配但备用键匹配时应该返回部分命中', () => {
       const key = 'test-cache-key';
       const restoreKeys = ['restore-key1', 'restore-key2'];
       
-      mockCacheExists.mockImplementation(k => k === 'restore-key2');
+      cacheExists.mockImplementation(k => k === 'restore-key2');
       
       const result = LocalCache.lookup(key, restoreKeys);
       
       expect(result).toEqual({ cacheHit: false, matchedKey: 'restore-key2' });
-      expect(mockCacheExists).toHaveBeenCalledWith(key);
-      expect(mockCacheExists).toHaveBeenCalledWith('restore-key1');
-      expect(mockCacheExists).toHaveBeenCalledWith('restore-key2');
+      expect(cacheExists).toHaveBeenCalledWith(key);
+      expect(cacheExists).toHaveBeenCalledWith('restore-key1');
+      expect(cacheExists).toHaveBeenCalledWith('restore-key2');
     });
 
     test('没有匹配的键时应该返回未命中', () => {
       const key = 'test-cache-key';
       const restoreKeys = ['restore-key1', 'restore-key2'];
       
-      mockCacheExists.mockReturnValue(false);
+      cacheExists.mockReturnValue(false);
       
       const result = LocalCache.lookup(key, restoreKeys);
       
       expect(result).toEqual({ cacheHit: false, matchedKey: undefined });
-      expect(mockCacheExists).toHaveBeenCalledWith(key);
-      expect(mockCacheExists).toHaveBeenCalledWith('restore-key1');
-      expect(mockCacheExists).toHaveBeenCalledWith('restore-key2');
+      expect(cacheExists).toHaveBeenCalledWith(key);
+      expect(cacheExists).toHaveBeenCalledWith('restore-key1');
+      expect(cacheExists).toHaveBeenCalledWith('restore-key2');
     });
   });
 }); 

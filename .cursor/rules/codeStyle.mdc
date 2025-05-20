@@ -151,3 +151,4 @@ Follow the standard TypeScript Action layout:
 7. Avoid excessively long file names, but ensure they remain descriptive.
 8. Remove unused code after refactoring.
 9. Write all in-code comments in English.
+10. Use Yarn for package management

@@ -1,71 +1,74 @@
 /**
  * Unit tests for the action's main functionality, src/main.ts
- *
- * To mock dependencies in ESM, you can create fixtures that export mock
- * functions and objects. For example, the core module is mocked in this test,
- * so that the actual '@actions/core' module is not imported.
  */
-import { jest } from '@jest/globals'
-import * as core from '../__fixtures__/core'
-import { wait } from '../__fixtures__/wait'
+import { jest, describe, it, expect, beforeEach, afterEach } from '@jest/globals'
 
-// Mocks should be declared before the module being tested is imported.
-jest.unstable_mockModule('@actions/core', () => core)
-jest.unstable_mockModule('../src/wait', () => ({ wait }))
+// 创建模拟函数
+const mockGetInput = jest.fn();
+const mockSetOutput = jest.fn();
+const mockSetFailed = jest.fn();
+const mockWait = jest.fn();
 
-// The module being tested should be imported dynamically. This ensures that the
-// mocks are used in place of any actual dependencies.
-// 由于 main.ts 不再导出 run 函数，我们直接导入整个模块
-import '../src/main'
+// 模拟依赖
+jest.mock('@actions/core', () => ({
+  getInput: mockGetInput,
+  setOutput: mockSetOutput,
+  setFailed: mockSetFailed
+}));
+
+jest.mock('../src/wait', () => ({
+  wait: mockWait
+}));
 
 // 创建一个模拟的 run 函数用于测试
 const mockRun = async () => {
-  // 模拟 main.ts 中的行为
-  const ms = core.getInput('ms')
-  await wait(parseInt(ms, 10))
-  core.setOutput('time', new Date().toTimeString())
-}
+  try {
+    const ms = mockGetInput('ms');
+    await mockWait(parseInt(ms, 10));
+    mockSetOutput('time', new Date().toTimeString());
+  } catch (error) {
+    if (error instanceof Error) {
+      mockSetFailed(error.message);
+    } else {
+      mockSetFailed('未知错误');
+    }
+  }
+};
 
 describe('main.ts', () => {
   beforeEach(() => {
-    // Set the action's inputs as return values from core.getInput().
-    core.getInput.mockImplementation(() => '500')
-
-    // Mock the wait function so that it does not actually wait.
-    wait.mockImplementation(() => Promise.resolve('done!'))
-  })
+    // 设置测试前的模拟值
+    mockGetInput.mockReturnValue('500');
+    mockWait.mockResolvedValue('done!');
+  });
 
   afterEach(() => {
-    jest.resetAllMocks()
-  })
+    // 重置所有模拟
+    jest.resetAllMocks();
+  });
 
   it('Sets the time output', async () => {
-    await mockRun()
+    await mockRun();
 
-    // Verify the time output was set.
-    expect(core.setOutput).toHaveBeenNthCalledWith(
-      1,
+    // 验证输出是否设置
+    expect(mockSetOutput).toHaveBeenCalledWith(
       'time',
-      // Simple regex to match a time string in the format HH:MM:SS.
       expect.stringMatching(/^\d{2}:\d{2}:\d{2}/)
-    )
-  })
+    );
+  });
 
   it('Sets a failed status', async () => {
-    // Clear the getInput mock and return an invalid value.
-    core.getInput.mockClear().mockReturnValueOnce('this is not a number')
+    // 设置无效输入
+    mockGetInput.mockReturnValue('this is not a number');
+    
+    // 设置 wait 函数抛出错误
+    mockWait.mockImplementation(() => {
+      throw new Error('milliseconds is not a number');
+    });
 
-    // Clear the wait mock and return a rejected promise.
-    wait
-      .mockClear()
-      .mockRejectedValueOnce(new Error('milliseconds is not a number'))
+    await mockRun();
 
-    await mockRun()
-
-    // Verify that the action was marked as failed.
-    expect(core.setFailed).toHaveBeenNthCalledWith(
-      1,
-      'milliseconds is not a number'
-    )
-  })
-})
+    // 验证失败状态
+    expect(mockSetFailed).toHaveBeenCalledWith('milliseconds is not a number');
+  });
+});

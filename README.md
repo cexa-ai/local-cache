@@ -1,306 +1,277 @@
-# Create a GitHub Action Using TypeScript
+# Local Cache Action
 
-[![GitHub Super-Linter](https://github.com/actions/typescript-action/actions/workflows/linter.yml/badge.svg)](https://github.com/super-linter/super-linter)
-![CI](https://github.com/actions/typescript-action/actions/workflows/ci.yml/badge.svg)
-[![Check dist/](https://github.com/actions/typescript-action/actions/workflows/check-dist.yml/badge.svg)](https://github.com/actions/typescript-action/actions/workflows/check-dist.yml)
-[![CodeQL](https://github.com/actions/typescript-action/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/actions/typescript-action/actions/workflows/codeql-analysis.yml)
-[![Coverage](./badges/coverage.svg)](./badges/coverage.svg)
+An efficient local caching solution designed for self-hosted runners, eliminating the need for GitHub remote cache. Implemented in TypeScript, it maintains API compatibility with the official GitHub Actions cache action.
 
-Use this template to bootstrap the creation of a TypeScript action. :rocket:
+## Features
 
-This template includes compilation support, tests, a validation workflow,
-publishing, and versioning guidance.
+- **Pure Local Caching Strategy**: Directly uses runner local storage, avoiding network transfers
+- **Performance Optimization**: Improves cache restoration and saving speed by reducing network transfers
+- **Strong Compatibility**: Supports single-path and multi-path caching, compatible with various file types
+- **Special Path Handling**: Provides customized processing for special directories (such as Go modules)
+- **Simple and Intuitive**: Clear interface and workflow, easy to understand and use
+- **Efficient Compression**: Uses zstd compression algorithm, balancing compression ratio and speed
+- **API Compatible**: Maintains API compatibility with the official GitHub Actions cache action
 
-If you are new, there's also a simpler introduction in the
-[Hello world JavaScript action repository](https://github.com/actions/hello-world-javascript-action).
+## Implementation Technology
 
-## Create Your Own Action
+This project is implemented in TypeScript, fully utilizing GitHub Actions lifecycle events for logical processing:
 
-To create your own action, you can use this repository as a template! Just
-follow the below instructions:
+- **Build**: Built using Node.js and TypeScript, and packaged with webpack
+- **Compression**: Uses zstd compression algorithm, the same compression method as the official cache action
+- **Testing**: Uses Jest for unit testing and integration testing
 
-1. Click the **Use this template** button at the top of the repository
-1. Select **Create a new repository**
-1. Select an owner and name for your new repository
-1. Click **Create repository**
-1. Clone your new repository
+### Compression Method
 
-> [!IMPORTANT]
->
-> Make sure to remove or update the [`CODEOWNERS`](./CODEOWNERS) file! For
-> details on how to use this file, see
-> [About code owners](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners).
+Cache data uses the zstd compression algorithm, which has the following advantages:
 
-## Initial Setup
+- Fast compression: About 3-5 times faster than gzip
+- Fast decompression: About 2-3 times faster than gzip
+- High compression ratio: Better compression ratio than gzip at similar speeds
+- Adjustable compression levels: Supports compression levels from -5 (fastest) to 22 (highest compression ratio)
 
-After you've cloned the repository to your local machine or codespace, you'll
-need to perform some initial setup steps before you can develop your action.
-
-> [!NOTE]
->
-> You'll need to have a reasonably modern version of
-> [Node.js](https://nodejs.org) handy (20.x or later should work!). If you are
-> using a version manager like [`nodenv`](https://github.com/nodenv/nodenv) or
-> [`fnm`](https://github.com/Schniz/fnm), this template has a `.node-version`
-> file at the root of the repository that can be used to automatically switch to
-> the correct version when you `cd` into the repository. Additionally, this
-> `.node-version` file is used by GitHub Actions in any `actions/setup-node`
-> actions.
-
-1. :hammer_and_wrench: Install the dependencies
-
-   ```bash
-   npm install
-   ```
-
-1. :building_construction: Package the TypeScript for distribution
-
-   ```bash
-   npm run bundle
-   ```
-
-1. :white_check_mark: Run the tests
-
-   ```bash
-   $ npm test
-
-   PASS  ./index.test.js
-     ✓ throws invalid number (3ms)
-     ✓ wait 500 ms (504ms)
-     ✓ test runs (95ms)
-
-   ...
-   ```
-
-## Update the Action Metadata
-
-The [`action.yml`](action.yml) file defines metadata about your action, such as
-input(s) and output(s). For details about this file, see
-[Metadata syntax for GitHub Actions](https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions).
-
-When you copy this repository, update `action.yml` with the name, description,
-inputs, and outputs for your action.
-
-## Update the Action Code
-
-The [`src/`](./src/) directory is the heart of your action! This contains the
-source code that will be run when your action is invoked. You can replace the
-contents of this directory with your own code.
-
-There are a few things to keep in mind when writing your action code:
-
-- Most GitHub Actions toolkit and CI/CD operations are processed asynchronously.
-  In `main.ts`, you will see that the action is run in an `async` function.
-
-  ```javascript
-  import * as core from '@actions/core'
-  //...
-
-  async function run() {
-    try {
-      //...
-    } catch (error) {
-      core.setFailed(error.message)
-    }
-  }
-  ```
-
-  For more information about the GitHub Actions toolkit, see the
-  [documentation](https://github.com/actions/toolkit/blob/master/README.md).
-
-So, what are you waiting for? Go ahead and start customizing your action!
-
-1. Create a new branch
-
-   ```bash
-   git checkout -b releases/v1
-   ```
-
-1. Replace the contents of `src/` with your action code
-1. Add tests to `__tests__/` for your source code
-1. Format, test, and build the action
-
-   ```bash
-   npm run all
-   ```
-
-   > This step is important! It will run [`rollup`](https://rollupjs.org/) to
-   > build the final JavaScript action code with all dependencies included. If
-   > you do not run this step, your action will not work correctly when it is
-   > used in a workflow.
-
-1. (Optional) Test your action locally
-
-   The [`@github/local-action`](https://github.com/github/local-action) utility
-   can be used to test your action locally. It is a simple command-line tool
-   that "stubs" (or simulates) the GitHub Actions Toolkit. This way, you can run
-   your TypeScript action locally without having to commit and push your changes
-   to a repository.
-
-   The `local-action` utility can be run in the following ways:
-
-   - Visual Studio Code Debugger
-
-     Make sure to review and, if needed, update
-     [`.vscode/launch.json`](./.vscode/launch.json)
-
-   - Terminal/Command Prompt
-
-     ```bash
-     # npx @github/local action <action-yaml-path> <entrypoint> <dotenv-file>
-     npx @github/local-action . src/main.ts .env
-     ```
-
-   You can provide a `.env` file to the `local-action` CLI to set environment
-   variables used by the GitHub Actions Toolkit. For example, setting inputs and
-   event payload data used by your action. For more information, see the example
-   file, [`.env.example`](./.env.example), and the
-   [GitHub Actions Documentation](https://docs.github.com/en/actions/learn-github-actions/variables#default-environment-variables).
-
-1. Commit your changes
-
-   ```bash
-   git add .
-   git commit -m "My first action is ready!"
-   ```
-
-1. Push them to your repository
-
-   ```bash
-   git push -u origin releases/v1
-   ```
-
-1. Create a pull request and get feedback on your action
-1. Merge the pull request into the `main` branch
-
-Your action is now published! :rocket:
-
-For information about versioning your action, see
-[Versioning](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md)
-in the GitHub Actions toolkit.
-
-## Validate the Action
-
-You can now validate the action by referencing it in a workflow file. For
-example, [`ci.yml`](./.github/workflows/ci.yml) demonstrates how to reference an
-action in the same repository.
-
-```yaml
-steps:
-  - name: Checkout
-    id: checkout
-    uses: actions/checkout@v4
-
-  - name: Test Local Action
-    id: test-action
-    uses: ./
-    with:
-      milliseconds: 1000
-
-  - name: Print Output
-    id: output
-    run: echo "${{ steps.test-action.outputs.time }}"
-```
-
-For example workflow runs, check out the
-[Actions tab](https://github.com/actions/typescript-action/actions)! :rocket:
+Default compression level is 3, achieving a good balance between speed and compression ratio.
 
 ## Usage
 
-After testing, you can create version tag(s) that developers can use to
-reference different stable versions of your action. For more information, see
-[Versioning](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md)
-in the GitHub Actions toolkit.
+### Basic Usage
 
-To include the action in a workflow in another repository, you can use the
-`uses` syntax with the `@` symbol to reference a specific branch, tag, or commit
-hash.
+```yaml
+# Use a single action to restore and save cache
+- name: Cache Dependencies
+  id: cache-deps
+  uses: ./.github/actions/local-cache
+  with:
+    path: node_modules
+    key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+    restore-keys: |
+      ${{ runner.os }}-node-
+
+# If cache miss, perform installation
+- name: Install Dependencies
+  if: steps.cache-deps.outputs.cache-hit != 'true'
+  run: npm install
+```
+
+### Separate Restore and Save Operations
+
+```yaml
+# Restore cache
+- name: Restore Cache
+  id: cache-restore
+  uses: ./.github/actions/local-cache/restore
+  with:
+    path: |
+      ~/.cache/go-build
+      ~/go/pkg/mod
+    key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+    restore-keys: |
+      ${{ runner.os }}-go-
+
+# If cache miss, perform installation
+- name: Install Go Dependencies
+  if: steps.cache-restore.outputs.cache-hit != 'true'
+  run: go mod download
+
+# Save cache
+- name: Save Cache
+  uses: ./.github/actions/local-cache/save
+  with:
+    path: |
+      ~/.cache/go-build
+      ~/go/pkg/mod
+    key: ${{ steps.cache-restore.outputs.cache-primary-key }}
+```
+
+## Input Parameters
+
+| Parameter | Description | Required | Default |
+|------|------|---------|-------|
+| `path` | List of files, directories, or wildcard patterns to cache | Yes | - |
+| `key` | Unique key for restoring and saving the cache | Yes | - |
+| `restore-keys` | List of fallback keys for restoring the cache, ordered by priority | No | - |
+| `upload-chunk-size` | Chunk size for chunked uploads (MB) | No | `32` |
+| `enableCrossOsArchive` | Whether to enable cross-OS cache archives | No | `false` |
+| `fail-on-cache-miss` | Whether to fail on cache miss | No | `false` |
+| `lookup-only` | Only look up cache without restoring | No | `false` |
+| `compression-level` | zstd compression level (-5 to 22) | No | `3` |
+
+## Output Parameters
+
+| Parameter | Description |
+|------|------|
+| `cache-hit` | String value indicating whether a cache hit occurred for the key. Will be 'true' or 'false' if a cache hit occurred; will be an empty string if no cache hit occurred. |
+| `cache-primary-key` | Primary key used for saving the cache, typically used for separate restore and save operations |
+
+## Cache Scope
+
+Cache scope is limited to key, version, and branch. Caches from the default branch are available to other branches.
+
+## How It Works
+
+1. **Local Cache Check**: Checks if a matching cache exists in the specified local cache directory
+2. **Local Cache Restoration**: If a local cache is found, directly restores to the target path
+3. **Automatic Cache Saving**: If no matching cache is found, automatically creates a new cache after the workflow completes
+4. **Compression and Decompression**: Uses the zstd algorithm for compression and decompression operations
+
+## Project Structure
+
+The project follows the standard structure for TypeScript Actions:
+
+```
+├── __tests__/              # Test files directory
+│   ├── unit/               # Unit tests
+│   ├── integration/        # Integration tests
+│   └── fixtures/           # Test data and mocks
+├── src/                    # Source code directory
+│   ├── cache/              # Core cache logic
+│   │   ├── compression.ts  # Compression-related processing
+│   │   ├── localCache.ts   # Local cache implementation
+│   │   └── utils.ts        # Utility functions
+│   ├── restore.ts          # Cache restoration entry point
+│   ├── save.ts             # Cache saving entry point
+│   └── main.ts             # Main entry point
+├── action.yml              # Main Action definition
+├── restore/action.yml      # Restore Action definition
+├── save/action.yml         # Save Action definition
+├── tsconfig.json           # TypeScript configuration
+├── jest.config.js          # Jest test configuration
+└── package.json            # Project dependencies
+```
+
+## Caching Strategies
+
+With the introduction of `restore` and `save` operations, various caching use cases can be implemented. Here are some common caching strategies:
+
+### Skip Steps Based on Cache Hit
 
 ```yaml
 steps:
-  - name: Checkout
-    id: checkout
-    uses: actions/checkout@v4
+  - uses: actions/checkout@v4
 
-  - name: Test Local Action
-    id: test-action
-    uses: actions/typescript-action@v1 # Commit with the `v1` tag
+  - uses: ./.github/actions/local-cache
+    id: cache
     with:
-      milliseconds: 1000
+      path: path/to/dependencies
+      key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
 
-  - name: Print Output
-    id: output
-    run: echo "${{ steps.test-action.outputs.time }}"
+  - name: Install Dependencies
+    if: steps.cache.outputs.cache-hit != 'true'
+    run: /install.sh
 ```
 
-## Publishing a New Release
+### Creating Cache Keys
 
-This project includes a helper script, [`script/release`](./script/release)
-designed to streamline the process of tagging and pushing new releases for
-GitHub Actions.
-
-GitHub Actions allows users to select a specific version of the action to use,
-based on release tags. This script simplifies this process by performing the
-following steps:
-
-1. **Retrieving the latest release tag:** The script starts by fetching the most
-   recent SemVer release tag of the current branch, by looking at the local data
-   available in your repository.
-1. **Prompting for a new release tag:** The user is then prompted to enter a new
-   release tag. To assist with this, the script displays the tag retrieved in
-   the previous step, and validates the format of the inputted tag (vX.X.X). The
-   user is also reminded to update the version field in package.json.
-1. **Tagging the new release:** The script then tags a new release and syncs the
-   separate major tag (e.g. v1, v2) with the new release tag (e.g. v1.0.0,
-   v2.1.2). When the user is creating a new major release, the script
-   auto-detects this and creates a `releases/v#` branch for the previous major
-   version.
-1. **Pushing changes to remote:** Finally, the script pushes the necessary
-   commits, tags and branches to the remote repository. From here, you will need
-   to create a new release in GitHub so users can easily reference the new tags
-   in their workflows.
-
-## Dependency License Management
-
-This template includes a GitHub Actions workflow,
-[`licensed.yml`](./.github/workflows/licensed.yml), that uses
-[Licensed](https://github.com/licensee/licensed) to check for dependencies with
-missing or non-compliant licenses. This workflow is initially disabled. To
-enable the workflow, follow the below steps.
-
-1. Open [`licensed.yml`](./.github/workflows/licensed.yml)
-1. Uncomment the following lines:
-
-   ```yaml
-   # pull_request:
-   #   branches:
-   #     - main
-   # push:
-   #   branches:
-   #     - main
-   ```
-
-1. Save and commit the changes
-
-Once complete, this workflow will run any time a pull request is created or
-changes pushed directly to `main`. If the workflow detects any dependencies with
-missing or non-compliant licenses, it will fail the workflow and provide details
-on the issue(s) found.
-
-### Updating Licenses
-
-Whenever you install or update dependencies, you can use the Licensed CLI to
-update the licenses database. To install Licensed, see the project's
-[Readme](https://github.com/licensee/licensed?tab=readme-ov-file#installation).
-
-To update the cached licenses, run the following command:
-
-```bash
-licensed cache
+```yaml
+  - uses: ./.github/actions/local-cache
+    with:
+      path: |
+        path/to/dependencies
+        some/other/dependencies
+      key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
 ```
 
-To check the status of cached licenses, run the following command:
+You can also use arbitrary command outputs in your cache keys, such as dates or software versions:
+
+```yaml
+  # Get date
+  - name: Get Date
+    id: get-date
+    run: |
+      echo "date=$(/bin/date -u "+%Y%m%d")" >> $GITHUB_OUTPUT
+    shell: bash
+
+  - uses: ./.github/actions/local-cache
+    with:
+      path: path/to/dependencies
+      key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('**/lockfiles') }}
+```
+
+## Testing
+
+This project uses Jest for testing, with test files located in the `__tests__` directory:
+
+- **Unit Tests**: Test the independent functionality of each component
+- **Integration Tests**: Test interactions between components
+- **Mock Tests**: Simulate the GitHub Actions environment
+
+Run tests:
 
 ```bash
-licensed status
+npm test
+```
+
+## Limitations and Considerations
+
+- This action is designed for self-hosted runners and is not suitable for GitHub-hosted runners
+- Local caching requires persistent storage; ensure the cache location remains unchanged between workflow runs
+- For permission-sensitive directories (such as Go modules), the action automatically handles permission issues
+- A repository can have a maximum of 10GB of cache
+- Windows environment variables (such as `%LocalAppData%`) will not be expanded by this operation; use `~` instead, which will expand to the HOME directory
+
+## Example Scenarios
+
+### Node.js Projects
+
+```yaml
+- name: Cache Node Modules
+  id: cache-node
+  uses: ./.github/actions/local-cache
+  with:
+    path: node_modules
+    key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+    restore-keys: |
+      ${{ runner.os }}-node-
+
+- name: Install Dependencies
+  if: steps.cache-node.outputs.cache-hit != 'true'
+  run: npm install
+```
+
+### Go Projects
+
+```yaml
+- name: Cache Go Dependencies
+  id: cache-go
+  uses: ./.github/actions/local-cache
+  with:
+    path: |
+      ~/.cache/go-build
+      ~/go/pkg/mod
+    key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+    restore-keys: |
+      ${{ runner.os }}-go-
+
+- name: Install Go Dependencies
+  if: steps.cache-go.outputs.cache-hit != 'true'
+  run: go mod download
+```
+
+### Python - pip
+
+```yaml
+- name: Cache pip packages
+  uses: ./.github/actions/local-cache
+  with:
+    path: ~/.cache/pip
+    key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+    restore-keys: |
+      ${{ runner.os }}-pip-
+
+- name: Install dependencies
+  run: pip install -r requirements.txt
+```
+
+### Rust - Cargo
+
+```yaml
+- name: Cache cargo registry
+  uses: ./.github/actions/local-cache
+  with:
+    path: |
+      ~/.cargo/registry
+      ~/.cargo/git
+      target
+    key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+    restore-keys: |
+      ${{ runner.os }}-cargo-
 ```
