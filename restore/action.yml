@@ -10,7 +10,8 @@ inputs:
     description: 'Unique key for restoring and saving the cache'
     required: true
   restore-keys:
-    description: 'List of fallback keys to use for restoring the cache, ordered by priority'
+    description:
+      'List of fallback keys to use for restoring the cache, ordered by priority'
     required: false
   enableCrossOsArchive:
     description: 'Whether to enable cross-OS cache archives'
@@ -27,10 +28,12 @@ inputs:
 
 outputs:
   cache-hit:
-    description: 'String value indicating whether a cache was found that exactly matches the key'
+    description:
+      'String value indicating whether a cache was found that exactly matches
+      the key'
   cache-primary-key:
     description: 'Primary key used for subsequent save operations'
 
 runs:
   using: 'node20'
-  main: '../dist/restore.js' 
+  main: '../dist/restore.js'

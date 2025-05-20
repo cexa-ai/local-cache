@@ -1,6 +1,6 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import * as core from '@actions/core';
+import * as fs from 'fs'
+import * as path from 'path'
+import * as core from '@actions/core'
 
 /**
  * Get cache directory path
@@ -8,14 +8,16 @@ import * as core from '@actions/core';
  */
 export function getCacheDir(): string {
   // Default to using .cache directory under runner work directory
-  const cacheDir = process.env.RUNNER_TOOL_CACHE || path.join(process.env.HOME || '/tmp', '.local-cache');
-  
+  const cacheDir =
+    process.env.RUNNER_TOOL_CACHE ||
+    path.join(process.env.HOME || '/tmp', '.local-cache')
+
   // Ensure cache directory exists
   if (!fs.existsSync(cacheDir)) {
-    fs.mkdirSync(cacheDir, { recursive: true });
+    fs.mkdirSync(cacheDir, { recursive: true })
   }
-  
-  return cacheDir;
+
+  return cacheDir
 }
 
 /**
@@ -25,8 +27,8 @@ export function getCacheDir(): string {
  */
 export function getCacheFilePath(key: string): string {
   // Use MD5 hash function to process key name to ensure filename safety
-  const safeKey = key.replace(/[^a-zA-Z0-9]/g, '_');
-  return path.join(getCacheDir(), `${safeKey}.tar.zst`);
+  const safeKey = key.replace(/[^a-zA-Z0-9]/g, '_')
+  return path.join(getCacheDir(), `${safeKey}.tar.zst`)
 }
 
 /**
@@ -35,8 +37,8 @@ export function getCacheFilePath(key: string): string {
  * @returns true if cache exists, false otherwise
  */
 export function cacheExists(key: string): boolean {
-  const cachePath = getCacheFilePath(key);
-  return fs.existsSync(cachePath);
+  const cachePath = getCacheFilePath(key)
+  return fs.existsSync(cachePath)
 }
 
 /**
@@ -48,8 +50,8 @@ export function resolvePaths(pathInput: string): string[] {
   // Split input paths and remove empty lines
   return pathInput
     .split('\n')
-    .map(s => s.trim())
-    .filter(s => s !== '');
+    .map((s) => s.trim())
+    .filter((s) => s !== '')
 }
 
 /**
@@ -57,7 +59,7 @@ export function resolvePaths(pathInput: string): string[] {
  * @param message Debug message
  */
 export function debug(message: string): void {
-  core.debug(message);
+  core.debug(message)
 }
 
 /**
@@ -65,7 +67,7 @@ export function debug(message: string): void {
  * @param message Info message
  */
 export function info(message: string): void {
-  core.info(message);
+  core.info(message)
 }
 
 /**
@@ -73,7 +75,7 @@ export function info(message: string): void {
  * @param message Warning message
  */
 export function warning(message: string): void {
-  core.warning(message);
+  core.warning(message)
 }
 
 /**
@@ -83,8 +85,8 @@ export function warning(message: string): void {
  */
 export function error(message: string, error?: Error): void {
   if (error) {
-    core.error(`${message}: ${error.message}`);
+    core.error(`${message}: ${error.message}`)
   } else {
-    core.error(message);
+    core.error(message)
   }
-} 
+}

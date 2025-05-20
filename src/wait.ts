@@ -5,10 +5,10 @@
  */
 export async function wait(milliseconds: number): Promise<string> {
   if (isNaN(milliseconds)) {
-    throw new Error('milliseconds is not a number');
+    throw new Error('milliseconds is not a number')
   }
 
-  return new Promise(resolve => {
-    setTimeout(() => resolve('done!'), milliseconds);
-  });
+  return new Promise((resolve) => {
+    setTimeout(() => resolve('done!'), milliseconds)
+  })
 }

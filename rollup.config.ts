@@ -15,7 +15,12 @@ const config = [
       format: 'es',
       sourcemap: true
     },
-    external: ['@actions/core', '@actions/io', '@actions/exec', '@actions/cache'],
+    external: [
+      '@actions/core',
+      '@actions/io',
+      '@actions/exec',
+      '@actions/cache'
+    ],
     plugins: [
       resolve({
         extensions: ['.ts', '.js']
@@ -24,7 +29,7 @@ const config = [
       typescript({
         tsconfig: './tsconfig.json'
       })
-    ],
+    ]
   },
   // 恢复操作入口文件
   {
@@ -34,7 +39,12 @@ const config = [
       format: 'es',
       sourcemap: true
     },
-    external: ['@actions/core', '@actions/io', '@actions/exec', '@actions/cache'],
+    external: [
+      '@actions/core',
+      '@actions/io',
+      '@actions/exec',
+      '@actions/cache'
+    ],
     plugins: [
       resolve({
         extensions: ['.ts', '.js']
@@ -43,7 +53,7 @@ const config = [
       typescript({
         tsconfig: './tsconfig.json'
       })
-    ],
+    ]
   },
   // 保存操作入口文件
   {
@@ -53,7 +63,12 @@ const config = [
       format: 'es',
       sourcemap: true
     },
-    external: ['@actions/core', '@actions/io', '@actions/exec', '@actions/cache'],
+    external: [
+      '@actions/core',
+      '@actions/io',
+      '@actions/exec',
+      '@actions/cache'
+    ],
     plugins: [
       resolve({
         extensions: ['.ts', '.js']
@@ -62,7 +77,7 @@ const config = [
       typescript({
         tsconfig: './tsconfig.json'
       })
-    ],
+    ]
   }
 ]
 

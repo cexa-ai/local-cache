@@ -1,7 +1,7 @@
-import * as core from '@actions/core';
-import * as fs from 'fs';
-import { compressWithZstd, decompressWithZstd } from './compression.js';
-import { getCacheFilePath, cacheExists } from './utils.js';
+import * as core from '@actions/core'
+import * as fs from 'fs'
+import { compressWithZstd, decompressWithZstd } from './compression.js'
+import { getCacheFilePath, cacheExists } from './utils.js'
 
 /**
  * Local Cache class
@@ -15,40 +15,44 @@ export class LocalCache {
    * @returns true if successful, false otherwise
    */
   static async save(
-    paths: string[], 
-    key: string, 
+    paths: string[],
+    key: string,
     compressionLevel: number = 3
   ): Promise<boolean> {
     try {
-      core.info(`Starting to save cache, key: ${key}`);
-      core.debug(`Cache paths: ${paths.join(', ')}`);
-      
+      core.info(`Starting to save cache, key: ${key}`)
+      core.debug(`Cache paths: ${paths.join(', ')}`)
+
       // Check if all paths exist
-      const existingPaths = paths.filter(p => fs.existsSync(p));
+      const existingPaths = paths.filter((p) => fs.existsSync(p))
       if (existingPaths.length === 0) {
-        core.warning('No paths found to cache, skipping cache save');
-        return false;
+        core.warning('No paths found to cache, skipping cache save')
+        return false
       }
-      
+
       // Get cache file path
-      const cachePath = getCacheFilePath(key);
-      
+      const cachePath = getCacheFilePath(key)
+
       // Compress files
-      const success = await compressWithZstd(cachePath, existingPaths, compressionLevel);
-      
+      const success = await compressWithZstd(
+        cachePath,
+        existingPaths,
+        compressionLevel
+      )
+
       if (success) {
-        core.info(`Cache saved successfully: ${key}`);
-        return true;
+        core.info(`Cache saved successfully: ${key}`)
+        return true
       } else {
-        core.warning(`Cache save failed: ${key}`);
-        return false;
+        core.warning(`Cache save failed: ${key}`)
+        return false
       }
     } catch (err) {
-      core.error(`Error saving cache: ${(err as Error).message}`);
-      return false;
+      core.error(`Error saving cache: ${(err as Error).message}`)
+      return false
     }
   }
-  
+
   /**
    * Restore cache
    * @param paths Array of target paths to restore
@@ -57,54 +61,54 @@ export class LocalCache {
    * @returns Restore result, including hit status and used key
    */
   static async restore(
-    paths: string[], 
-    primaryKey: string, 
+    paths: string[],
+    primaryKey: string,
     restoreKeys: string[] = []
   ): Promise<{ cacheHit: boolean; restoredKey: string | undefined }> {
     try {
-      core.info(`Starting to restore cache, primary key: ${primaryKey}`);
+      core.info(`Starting to restore cache, primary key: ${primaryKey}`)
       if (restoreKeys.length > 0) {
-        core.debug(`Restore keys: ${restoreKeys.join(', ')}`);
+        core.debug(`Restore keys: ${restoreKeys.join(', ')}`)
       }
-      
+
       // First check primary key
       if (cacheExists(primaryKey)) {
-        core.info(`Found exact match cache: ${primaryKey}`);
-        const cachePath = getCacheFilePath(primaryKey);
-        const success = await decompressWithZstd(cachePath, '/');
-        
+        core.info(`Found exact match cache: ${primaryKey}`)
+        const cachePath = getCacheFilePath(primaryKey)
+        const success = await decompressWithZstd(cachePath, '/')
+
         if (success) {
-          core.info(`Cache restored successfully: ${primaryKey}`);
-          return { cacheHit: true, restoredKey: primaryKey };
+          core.info(`Cache restored successfully: ${primaryKey}`)
+          return { cacheHit: true, restoredKey: primaryKey }
         } else {
-          core.warning(`Cache restore failed: ${primaryKey}`);
+          core.warning(`Cache restore failed: ${primaryKey}`)
         }
       }
-      
+
       // If primary key doesn't exist or restore fails, try fallback keys
       for (const restoreKey of restoreKeys) {
         if (cacheExists(restoreKey)) {
-          core.info(`Found partial match cache: ${restoreKey}`);
-          const cachePath = getCacheFilePath(restoreKey);
-          const success = await decompressWithZstd(cachePath, '/');
-          
+          core.info(`Found partial match cache: ${restoreKey}`)
+          const cachePath = getCacheFilePath(restoreKey)
+          const success = await decompressWithZstd(cachePath, '/')
+
           if (success) {
-            core.info(`Cache restored successfully: ${restoreKey}`);
-            return { cacheHit: false, restoredKey: restoreKey };
+            core.info(`Cache restored successfully: ${restoreKey}`)
+            return { cacheHit: false, restoredKey: restoreKey }
           } else {
-            core.warning(`Cache restore failed: ${restoreKey}`);
+            core.warning(`Cache restore failed: ${restoreKey}`)
           }
         }
       }
-      
-      core.info('No matching cache found');
-      return { cacheHit: false, restoredKey: undefined };
+
+      core.info('No matching cache found')
+      return { cacheHit: false, restoredKey: undefined }
     } catch (err) {
-      core.error(`Error restoring cache: ${(err as Error).message}`);
-      return { cacheHit: false, restoredKey: undefined };
+      core.error(`Error restoring cache: ${(err as Error).message}`)
+      return { cacheHit: false, restoredKey: undefined }
     }
   }
-  
+
   /**
    * Lookup cache
    * @param primaryKey Primary cache key
@@ -112,31 +116,31 @@ export class LocalCache {
    * @returns Lookup result, including hit status and found key
    */
   static lookup(
-    primaryKey: string, 
+    primaryKey: string,
     restoreKeys: string[] = []
   ): { cacheHit: boolean; matchedKey: string | undefined } {
     try {
-      core.info(`Looking up cache, primary key: ${primaryKey}`);
-      
+      core.info(`Looking up cache, primary key: ${primaryKey}`)
+
       // First check primary key
       if (cacheExists(primaryKey)) {
-        core.info(`Found exact match cache: ${primaryKey}`);
-        return { cacheHit: true, matchedKey: primaryKey };
+        core.info(`Found exact match cache: ${primaryKey}`)
+        return { cacheHit: true, matchedKey: primaryKey }
       }
-      
+
       // If primary key doesn't exist, try fallback keys
       for (const restoreKey of restoreKeys) {
         if (cacheExists(restoreKey)) {
-          core.info(`Found partial match cache: ${restoreKey}`);
-          return { cacheHit: false, matchedKey: restoreKey };
+          core.info(`Found partial match cache: ${restoreKey}`)
+          return { cacheHit: false, matchedKey: restoreKey }
         }
       }
-      
-      core.info('No matching cache found');
-      return { cacheHit: false, matchedKey: undefined };
+
+      core.info('No matching cache found')
+      return { cacheHit: false, matchedKey: undefined }
     } catch (err) {
-      core.error(`Error looking up cache: ${(err as Error).message}`);
-      return { cacheHit: false, matchedKey: undefined };
+      core.error(`Error looking up cache: ${(err as Error).message}`)
+      return { cacheHit: false, matchedKey: undefined }
     }
   }
-} 
+}

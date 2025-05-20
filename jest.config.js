@@ -4,21 +4,20 @@
 export default {
   clearMocks: true,
   collectCoverage: true,
-  coverageDirectory: "coverage",
-  coveragePathIgnorePatterns: [
-    "/node_modules/"
-  ],
-  coverageProvider: "v8",
+  coverageDirectory: 'coverage',
+  coveragePathIgnorePatterns: ['/node_modules/'],
+  coverageProvider: 'v8',
   preset: 'ts-jest',
-  testEnvironment: "node",
-  testMatch: [
-    "**/__tests__/**/*.test.ts"
-  ],
+  testEnvironment: 'node',
+  testMatch: ['**/__tests__/**/*.test.ts'],
   verbose: true,
   transform: {
-    '^.+\\.ts$': ['ts-jest', {
-      useESM: true,
-    }]
+    '^.+\\.ts$': [
+      'ts-jest',
+      {
+        useESM: true
+      }
+    ]
   },
   moduleNameMapper: {
     '^(\\.{1,2}/.*)\\.js$': '$1'

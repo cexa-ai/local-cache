@@ -10,7 +10,8 @@ import * as path from 'path';
  */
 function getCacheDir() {
     // Default to using .cache directory under runner work directory
-    const cacheDir = process.env.RUNNER_TOOL_CACHE || path.join(process.env.HOME || '/tmp', '.local-cache');
+    const cacheDir = process.env.RUNNER_TOOL_CACHE ||
+        path.join(process.env.HOME || '/tmp', '.local-cache');
     // Ensure cache directory exists
     if (!fs.existsSync(cacheDir)) {
         fs.mkdirSync(cacheDir, { recursive: true });
@@ -45,8 +46,8 @@ function resolvePaths(pathInput) {
     // Split input paths and remove empty lines
     return pathInput
         .split('\n')
-        .map(s => s.trim())
-        .filter(s => s !== '');
+        .map((s) => s.trim())
+        .filter((s) => s !== '');
 }
 /**
  * Log debug information
@@ -193,7 +194,7 @@ class LocalCache {
             core.info(`Starting to save cache, key: ${key}`);
             core.debug(`Cache paths: ${paths.join(', ')}`);
             // Check if all paths exist
-            const existingPaths = paths.filter(p => fs.existsSync(p));
+            const existingPaths = paths.filter((p) => fs.existsSync(p));
             if (existingPaths.length === 0) {
                 core.warning('No paths found to cache, skipping cache save');
                 return false;
@@ -309,9 +310,12 @@ async function run() {
         const lookupOnly = core.getBooleanInput('lookup-only');
         // Parse paths and restore keys
         const paths = resolvePaths(path);
-        const restoreKeysList = restoreKeys ?
-            restoreKeys.split('\n').map(s => s.trim()).filter(s => s !== '') :
-            [];
+        const restoreKeysList = restoreKeys
+            ? restoreKeys
+                .split('\n')
+                .map((s) => s.trim())
+                .filter((s) => s !== '')
+            : [];
         core.debug(`Paths: ${paths.join(', ')}`);
         core.debug(`Key: ${key}`);
         core.debug(`Restore keys: ${restoreKeysList.join(', ')}`);
