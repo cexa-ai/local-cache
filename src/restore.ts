@@ -1,4 +1,5 @@
 import * as core from '@actions/core'
+import * as path from 'path'
 import { LocalCache } from './cache/localCache.js'
 import { resolvePaths } from './cache/utils.js'
 
@@ -18,9 +19,9 @@ async function run(): Promise<void> {
     const paths = resolvePaths(path)
     const restoreKeysList = restoreKeys
       ? restoreKeys
-          .split('\n')
-          .map((s) => s.trim())
-          .filter((s) => s !== '')
+        .split('\n')
+        .map((s) => s.trim())
+        .filter((s) => s !== '')
       : []
 
     core.debug(`Paths: ${paths.join(', ')}`)
@@ -39,11 +40,15 @@ async function run(): Promise<void> {
       return
     }
 
+
+    const workspaceDir = process.env.GITHUB_WORKSPACE || process.cwd()
+
     // Restore cache
     const { cacheHit, restoredKey } = await LocalCache.restore(
       paths,
       key,
-      restoreKeysList
+      restoreKeysList,
+      workspaceDir
     )
     core.setOutput('cache-hit', cacheHit.toString())
     core.setOutput('cache-primary-key', key)

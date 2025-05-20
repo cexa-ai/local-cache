@@ -58,12 +58,14 @@ export class LocalCache {
    * @param paths Array of target paths to restore
    * @param primaryKey Primary cache key
    * @param restoreKeys Array of fallback cache keys
+   * @param targetDir Target directory for decompression
    * @returns Restore result, including hit status and used key
    */
   static async restore(
     paths: string[],
     primaryKey: string,
-    restoreKeys: string[] = []
+    restoreKeys: string[] = [],
+    targetDir: string = '/'
   ): Promise<{ cacheHit: boolean; restoredKey: string | undefined }> {
     try {
       core.info(`Starting to restore cache, primary key: ${primaryKey}`)
@@ -75,7 +77,7 @@ export class LocalCache {
       if (cacheExists(primaryKey)) {
         core.info(`Found exact match cache: ${primaryKey}`)
         const cachePath = getCacheFilePath(primaryKey)
-        const success = await decompressWithZstd(cachePath, '/')
+        const success = await decompressWithZstd(cachePath, targetDir)
 
         if (success) {
           core.info(`Cache restored successfully: ${primaryKey}`)
@@ -90,7 +92,7 @@ export class LocalCache {
         if (cacheExists(restoreKey)) {
           core.info(`Found partial match cache: ${restoreKey}`)
           const cachePath = getCacheFilePath(restoreKey)
-          const success = await decompressWithZstd(cachePath, '/')
+          const success = await decompressWithZstd(cachePath, targetDir)
 
           if (success) {
             core.info(`Cache restored successfully: ${restoreKey}`)
