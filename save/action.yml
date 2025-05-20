@@ -1,0 +1,23 @@
+name: 'Save Cache'
+description: 'Save local cache'
+author: 'Your Name'
+
+inputs:
+  path:
+    description: 'List of files, directories, or wildcard patterns to cache'
+    required: true
+  key:
+    description: 'Unique key for saving the cache'
+    required: true
+  upload-chunk-size:
+    description: 'Size of upload chunks in MB'
+    required: false
+    default: '32'
+  compression-level:
+    description: 'zstd compression level (-5 to 22)'
+    required: false
+    default: '3'
+
+runs:
+  using: 'node20'
+  main: '../dist/save.js' 

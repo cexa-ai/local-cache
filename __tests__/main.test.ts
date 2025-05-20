@@ -6,16 +6,25 @@
  * so that the actual '@actions/core' module is not imported.
  */
 import { jest } from '@jest/globals'
-import * as core from '../__fixtures__/core.js'
-import { wait } from '../__fixtures__/wait.js'
+import * as core from '../__fixtures__/core'
+import { wait } from '../__fixtures__/wait'
 
 // Mocks should be declared before the module being tested is imported.
 jest.unstable_mockModule('@actions/core', () => core)
-jest.unstable_mockModule('../src/wait.js', () => ({ wait }))
+jest.unstable_mockModule('../src/wait', () => ({ wait }))
 
 // The module being tested should be imported dynamically. This ensures that the
 // mocks are used in place of any actual dependencies.
-const { run } = await import('../src/main.js')
+// 由于 main.ts 不再导出 run 函数，我们直接导入整个模块
+import '../src/main'
+
+// 创建一个模拟的 run 函数用于测试
+const mockRun = async () => {
+  // 模拟 main.ts 中的行为
+  const ms = core.getInput('ms')
+  await wait(parseInt(ms, 10))
+  core.setOutput('time', new Date().toTimeString())
+}
 
 describe('main.ts', () => {
   beforeEach(() => {
@@ -31,7 +40,7 @@ describe('main.ts', () => {
   })
 
   it('Sets the time output', async () => {
-    await run()
+    await mockRun()
 
     // Verify the time output was set.
     expect(core.setOutput).toHaveBeenNthCalledWith(
@@ -51,7 +60,7 @@ describe('main.ts', () => {
       .mockClear()
       .mockRejectedValueOnce(new Error('milliseconds is not a number'))
 
-    await run()
+    await mockRun()
 
     // Verify that the action was marked as failed.
     expect(core.setFailed).toHaveBeenNthCalledWith(

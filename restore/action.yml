@@ -1,13 +1,7 @@
-name: 'Local Cache'
-description: 'Local cache solution designed for self-hosted runners, without relying on GitHub remote cache'
+name: 'Restore Cache'
+description: 'Restore local cache'
 author: 'Your Name'
 
-# Add your action's branding here. This will appear on the GitHub Marketplace.
-branding:
-  icon: heart
-  color: red
-
-# Define your inputs here.
 inputs:
   path:
     description: 'List of files, directories, or wildcard patterns to cache'
@@ -18,10 +12,6 @@ inputs:
   restore-keys:
     description: 'List of fallback keys to use for restoring the cache, ordered by priority'
     required: false
-  upload-chunk-size:
-    description: 'Size of upload chunks in MB'
-    required: false
-    default: '32'
   enableCrossOsArchive:
     description: 'Whether to enable cross-OS cache archives'
     required: false
@@ -34,18 +24,13 @@ inputs:
     description: 'Only lookup cache without restoring'
     required: false
     default: 'false'
-  compression-level:
-    description: 'zstd compression level (-5 to 22)'
-    required: false
-    default: '3'
 
-# Define your outputs here.
 outputs:
   cache-hit:
     description: 'String value indicating whether a cache was found that exactly matches the key'
   cache-primary-key:
-    description: 'Primary key used to save the cache, typically used for separate restore and save operations'
+    description: 'Primary key used for subsequent save operations'
 
 runs:
   using: 'node20'
-  main: 'dist/main.js'
+  main: '../dist/restore.js' 
