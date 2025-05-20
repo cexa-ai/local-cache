@@ -4,37 +4,24 @@
 export default {
   clearMocks: true,
   collectCoverage: true,
-  collectCoverageFrom: ['./src/**'],
-  coverageDirectory: './coverage',
-  coveragePathIgnorePatterns: ['/node_modules/', '/dist/'],
-  coverageReporters: ['json-summary', 'text', 'lcov'],
-  // Uncomment the below lines if you would like to enforce a coverage threshold
-  // for your action. This will fail the build if the coverage is below the
-  // specified thresholds.
-  // coverageThreshold: {
-  //   global: {
-  //     branches: 100,
-  //     functions: 100,
-  //     lines: 100,
-  //     statements: 100
-  //   }
-  // },
-  extensionsToTreatAsEsm: ['.ts'],
-  moduleFileExtensions: ['ts', 'js'],
+  coverageDirectory: "coverage",
+  coveragePathIgnorePatterns: [
+    "/node_modules/"
+  ],
+  coverageProvider: "v8",
   preset: 'ts-jest',
-  reporters: ['default'],
-  resolver: 'ts-jest-resolver',
-  testEnvironment: 'node',
-  testMatch: ['**/*.test.ts'],
-  testPathIgnorePatterns: ['/dist/', '/node_modules/'],
+  testEnvironment: "node",
+  testMatch: [
+    "**/__tests__/**/*.test.ts"
+  ],
+  verbose: true,
   transform: {
-    '^.+\\.ts$': [
-      'ts-jest',
-      {
-        tsconfig: 'tsconfig.eslint.json',
-        useESM: true
-      }
-    ]
+    '^.+\\.ts$': ['ts-jest', {
+      useESM: true,
+    }]
   },
-  verbose: true
+  moduleNameMapper: {
+    '^(\\.{1,2}/.*)\\.js$': '$1'
+  },
+  extensionsToTreatAsEsm: ['.ts']
 }
