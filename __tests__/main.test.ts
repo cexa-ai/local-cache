@@ -2,12 +2,12 @@
  * Unit tests for the action's main functionality, src/main.ts
  */
 import {
-  jest,
-  describe,
-  it,
-  expect,
+  afterEach,
   beforeEach,
-  afterEach
+  describe,
+  expect,
+  it,
+  jest
 } from '@jest/globals'
 
 // 创建模拟函数

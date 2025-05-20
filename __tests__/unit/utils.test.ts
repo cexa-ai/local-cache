@@ -1,14 +1,14 @@
 import { describe, expect, test } from '@jest/globals'
 import { resolvePaths } from '../../src/cache/utils'
 
-describe('utils 工具函数测试', () => {
+describe('Utils function tests', () => {
   describe('resolvePaths', () => {
-    test('应该正确解析单行路径', () => {
+    test('should correctly parse single line path', () => {
       const paths = resolvePaths('/path/to/file')
       expect(paths).toEqual(['/path/to/file'])
     })
 
-    test('应该正确解析多行路径', () => {
+    test('should correctly parse multi-line paths', () => {
       const paths = resolvePaths(`/path/to/file1
 /path/to/file2
 /path/to/file3`)
@@ -19,7 +19,7 @@ describe('utils 工具函数测试', () => {
       ])
     })
 
-    test('应该移除空行', () => {
+    test('should remove empty lines', () => {
       const paths = resolvePaths(`/path/to/file1
 
 /path/to/file2
@@ -27,7 +27,7 @@ describe('utils 工具函数测试', () => {
       expect(paths).toEqual(['/path/to/file1', '/path/to/file2'])
     })
 
-    test('应该移除空白行', () => {
+    test('should remove whitespace-only lines', () => {
       const paths = resolvePaths(`/path/to/file1
   
 /path/to/file2`)
