@@ -18,9 +18,9 @@ async function run(): Promise<void> {
     // Parse paths
     const paths = resolvePaths(path)
 
-    core.debug(`Paths: ${paths.join(', ')}`)
-    core.debug(`Key: ${key}`)
-    core.debug(`Compression level: ${compressionLevel}`)
+    core.info(`Paths: ${paths.join(', ')}`)
+    core.info(`Key: ${key}`)
+    core.info(`Compression level: ${compressionLevel}`)
 
     // Save cache
     const success = await LocalCache.save(paths, key, compressionLevel)
