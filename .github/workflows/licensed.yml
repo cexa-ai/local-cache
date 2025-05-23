@@ -34,11 +34,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: .node-version
-          cache: npm
+          cache: yarn
 
       - name: Install Dependencies
-        id: npm-ci
-        run: npm ci
+        id: yarn-ci
+        run: yarn ci
 
       - name: Setup Ruby
         id: setup-ruby

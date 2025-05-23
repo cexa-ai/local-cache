@@ -10,21 +10,15 @@ updates:
           - minor
           - patch
 
-  - package-ecosystem: npm
+  - package-ecosystem: yarn
     directory: /
     schedule:
       interval: weekly
-    ignore:
-      - dependency-name: '@types/node'
-        update-types:
-          - 'version-update:semver-major'
     groups:
-      npm-development:
-        dependency-type: development
+      yarn-development:
         update-types:
           - minor
           - patch
-      npm-production:
-        dependency-type: production
+      yarn-production:
         update-types:
           - patch

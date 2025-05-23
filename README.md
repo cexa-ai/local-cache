@@ -53,7 +53,7 @@ compression ratio.
 # Use a single action to restore and save cache
 - name: Cache Dependencies
   id: cache-deps
-  uses: ./.github/actions/local-cache
+  uses: ./.github/cexa-ai/local-cache
   with:
     path: node_modules
     key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -72,7 +72,7 @@ compression ratio.
 # Restore cache
 - name: Restore Cache
   id: cache-restore
-  uses: ./.github/actions/local-cache/restore
+  uses: ./.github/cexa-ai/local-cache/restore
   with:
     path: |
       ~/.cache/go-build
@@ -88,7 +88,7 @@ compression ratio.
 
 # Save cache
 - name: Save Cache
-  uses: ./.github/actions/local-cache/save
+  uses: ./.github/cexa-ai/local-cache/save
   with:
     path: |
       ~/.cache/go-build
@@ -168,7 +168,7 @@ cases can be implemented. Here are some common caching strategies:
 steps:
   - uses: actions/checkout@v4
 
-  - uses: ./.github/actions/local-cache
+  - uses: ./.github/cexa-ai/local-cache
     id: cache
     with:
       path: path/to/dependencies
@@ -182,7 +182,7 @@ steps:
 ### Creating Cache Keys
 
 ```yaml
-- uses: ./.github/actions/local-cache
+- uses: ./.github/cexa-ai/local-cache
   with:
     path: |
       path/to/dependencies
@@ -201,7 +201,7 @@ software versions:
     echo "date=$(/bin/date -u "+%Y%m%d")" >> $GITHUB_OUTPUT
   shell: bash
 
-- uses: ./.github/actions/local-cache
+- uses: ./.github/cexa-ai/local-cache
   with:
     path: path/to/dependencies
     key:
@@ -243,7 +243,7 @@ npm test
 ```yaml
 - name: Cache Node Modules
   id: cache-node
-  uses: ./.github/actions/local-cache
+  uses: ./.github/cexa-ai/local-cache
   with:
     path: node_modules
     key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -260,7 +260,7 @@ npm test
 ```yaml
 - name: Cache Go Dependencies
   id: cache-go
-  uses: ./.github/actions/local-cache
+  uses: ./.github/cexa-ai/local-cache
   with:
     path: |
       ~/.cache/go-build
@@ -278,7 +278,7 @@ npm test
 
 ```yaml
 - name: Cache pip packages
-  uses: ./.github/actions/local-cache
+  uses: ./.github/cexa-ai/local-cache
   with:
     path: ~/.cache/pip
     key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
@@ -293,7 +293,7 @@ npm test
 
 ```yaml
 - name: Cache cargo registry
-  uses: ./.github/actions/local-cache
+  uses: ./.github/cexa-ai/local-cache
   with:
     path: |
       ~/.cargo/registry
