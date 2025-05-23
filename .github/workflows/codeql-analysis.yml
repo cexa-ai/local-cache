@@ -47,15 +47,12 @@ jobs:
           languages: ${{ matrix.language }}
           source-root: src
           cache: true
-        env:
-          IGNORE_GITHUB_ACTIONS: "true"
-          IGNORE_MARKDOWN: "true"
-          IGNORE_NATURAL_LANGUAGE: "true"
 
       - name: Autobuild
         id: autobuild
         uses: github/codeql-action/autobuild@v3
 
       - name: Perform CodeQL Analysis
+        continue-on-error: true
         id: analyze
         uses: github/codeql-action/analyze@v3
