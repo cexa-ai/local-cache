@@ -57,7 +57,8 @@ jobs:
         id: test-action
         uses: ./
         with:
-          path: 'node_modules'
+          path: 'dist'
+          key: 'node-modules-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}'
           milliseconds: 2000
           upload-chunk-size: 32
           enableCrossOsArchive: false
