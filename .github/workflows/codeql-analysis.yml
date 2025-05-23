@@ -32,12 +32,25 @@ jobs:
         id: checkout
         uses: actions/checkout@v4
 
+      - name: Docker Cache
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
       - name: Initialize CodeQL
         id: initialize
         uses: github/codeql-action/init@v3
         with:
           languages: ${{ matrix.language }}
           source-root: src
+          cache: true
+        env:
+          IGNORE_GITHUB_ACTIONS: "true"
+          IGNORE_MARKDOWN: "true"
+          IGNORE_NATURAL_LANGUAGE: "true"
 
       - name: Autobuild
         id: autobuild
