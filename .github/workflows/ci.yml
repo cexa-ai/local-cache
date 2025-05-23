@@ -42,7 +42,7 @@ jobs:
 
       - name: Test
         id: yarn-ci-test
-        run: yarn ci-test
+        run: yarn install --immutable-test
 
   test-action:
     name: GitHub Actions Test

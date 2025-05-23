@@ -39,7 +39,7 @@ jobs:
 
       - name: Install Dependencies
         id: install
-        run: yarn ci
+        run: yarn install --immutable
 
       - name: Build dist/ Directory
         id: build

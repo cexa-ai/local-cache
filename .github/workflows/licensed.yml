@@ -38,7 +38,7 @@ jobs:
 
       - name: Install Dependencies
         id: yarn-ci
-        run: yarn ci
+        run: yarn install --immutable
 
       - name: Setup Ruby
         id: setup-ruby
