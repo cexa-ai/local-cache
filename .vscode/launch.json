@@ -1,38 +1,30 @@
 {
-    "version": "0.2.0",
+  "version": "0.2.0",
+  "editor.tabSize": 4,
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": false,
+  "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
+  "[typescript]": {
     "editor.tabSize": 4,
     "editor.insertSpaces": true,
-    "editor.detectIndentation": false,
-    "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
-    "[typescript]": {
-        "editor.tabSize": 4,
-        "editor.insertSpaces": true,
-        "editor.detectIndentation": false
-    },
-    "[javascript]": {
-        "editor.tabSize": 4,
-        "editor.insertSpaces": true,
-        "editor.detectIndentation": false
-    },
-    "files.eol": "\n",
-    "configurations": [
-        {
-            "name": "Debug Action",
-            "type": "node",
-            "request": "launch",
-            "runtimeExecutable": "npx",
-            "cwd": "${workspaceRoot}",
-            "args": [
-                "@github/local-action",
-                ".",
-                "src/main.ts",
-                ".env"
-            ],
-            "console": "integratedTerminal",
-            "skipFiles": [
-                "<node_internals>/**",
-                "node_modules/**"
-            ]
-        }
-    ]
+    "editor.detectIndentation": false
+  },
+  "[javascript]": {
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true,
+    "editor.detectIndentation": false
+  },
+  "files.eol": "\n",
+  "configurations": [
+    {
+      "name": "Debug Action",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "npx",
+      "cwd": "${workspaceRoot}",
+      "args": ["@github/local-action", ".", "src/main.ts", ".env"],
+      "console": "integratedTerminal",
+      "skipFiles": ["<node_internals>/**", "node_modules/**"]
+    }
+  ]
 }

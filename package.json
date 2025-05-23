@@ -30,7 +30,7 @@
     "build:post": "npx ncc build src/restore.ts -o dist/restore --source-map --license licenses.txt --minify",
     "ci-test": "NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 npx jest",
     "coverage": "npx make-coverage-badge --output-path ./badges/coverage.svg",
-    "format:write": "npx prettier --write .",
+    "format:write": "npx prettier --write . || true",
     "format:check": "npx prettier --check .",
     "lint": "npx eslint .",
     "local-action": "npx @github/local-action . src/main.ts .env",
