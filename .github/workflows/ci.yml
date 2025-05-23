@@ -57,7 +57,13 @@ jobs:
         id: test-action
         uses: ./
         with:
+          path: 'node_modules'
           milliseconds: 2000
+          upload-chunk-size: 32
+          enableCrossOsArchive: false
+          fail-on-cache-miss: false
+          lookup-only: false
+          compression-level: 3
 
       - name: Print Output
         id: output
