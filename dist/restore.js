@@ -153,6 +153,31 @@ async function decompressWithZstd(archivePath, targetDir = '/') {
             error(`Compressed file does not exist: ${archivePath}`);
             return false;
         }
+        // 确保目标目录存在
+        if (!fs.existsSync(targetDir)) {
+            debug(`Creating target directory: ${targetDir}`);
+            try {
+                fs.mkdirSync(targetDir, { recursive: true });
+            }
+            catch (err) {
+                error(`Failed to create target directory: ${targetDir}`, err);
+                // 如果无法创建目录，尝试使用当前目录
+                targetDir = process.cwd();
+                info(`Falling back to current directory: ${targetDir}`);
+            }
+        }
+        // 检查目标目录的写入权限
+        try {
+            fs.accessSync(targetDir, fs.constants.W_OK);
+            debug(`Write permission confirmed for directory: ${targetDir}`);
+        }
+        catch (err) {
+            error(`No write permission for directory: ${targetDir}`, err);
+            // 如果没有写入权限，尝试使用临时目录
+            const tempDir = process.env.RUNNER_TEMP || '/tmp';
+            targetDir = tempDir;
+            info(`Falling back to temp directory: ${targetDir}`);
+        }
         // Build tar command
         const tarArgs = [
             '--use-compress-program',
@@ -222,9 +247,10 @@ class LocalCache {
      * @param paths Array of target paths to restore
      * @param primaryKey Primary cache key
      * @param restoreKeys Array of fallback cache keys
+     * @param targetDir Target directory for decompression
      * @returns Restore result, including hit status and used key
      */
-    static async restore(paths, primaryKey, restoreKeys = []) {
+    static async restore(paths, primaryKey, restoreKeys = [], targetDir = '/') {
         try {
             core.info(`Starting to restore cache, primary key: ${primaryKey}`);
             if (restoreKeys.length > 0) {
@@ -234,7 +260,7 @@ class LocalCache {
             if (cacheExists(primaryKey)) {
                 core.info(`Found exact match cache: ${primaryKey}`);
                 const cachePath = getCacheFilePath(primaryKey);
-                const success = await decompressWithZstd(cachePath, '/');
+                const success = await decompressWithZstd(cachePath, targetDir);
                 if (success) {
                     core.info(`Cache restored successfully: ${primaryKey}`);
                     return { cacheHit: true, restoredKey: primaryKey };
@@ -248,7 +274,7 @@ class LocalCache {
                 if (cacheExists(restoreKey)) {
                     core.info(`Found partial match cache: ${restoreKey}`);
                     const cachePath = getCacheFilePath(restoreKey);
-                    const success = await decompressWithZstd(cachePath, '/');
+                    const success = await decompressWithZstd(cachePath, targetDir);
                     if (success) {
                         core.info(`Cache restored successfully: ${restoreKey}`);
                         return { cacheHit: false, restoredKey: restoreKey };
@@ -329,8 +355,9 @@ async function run() {
             }
             return;
         }
+        const workspaceDir = process.env.GITHUB_WORKSPACE || process.cwd();
         // Restore cache
-        const { cacheHit, restoredKey } = await LocalCache.restore(paths, key, restoreKeysList);
+        const { cacheHit, restoredKey } = await LocalCache.restore(paths, key, restoreKeysList, workspaceDir);
         core.setOutput('cache-hit', cacheHit.toString());
         core.setOutput('cache-primary-key', key);
         if (cacheHit) {
