@@ -58,7 +58,7 @@ jobs:
         uses: ./
         with:
           path: 'dist'
-          key: 'node-modules-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}'
+          key: 'dist'
           milliseconds: 2000
           upload-chunk-size: 32
           enableCrossOsArchive: false
