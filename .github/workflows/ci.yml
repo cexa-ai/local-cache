@@ -30,19 +30,19 @@ jobs:
 
       - name: Install Dependencies
         id: yarn-ci
-        run: yarn ci
+        run: yarn install --immutable
 
       - name: Check Format
         id: yarn-format-check
-        run: yarn run format:check
+        run: yarn format:check
 
       - name: Lint
         id: yarn-lint
-        run: yarn run lint
+        run: yarn lint
 
       - name: Test
         id: yarn-ci-test
-        run: yarn run ci-test
+        run: yarn ci-test
 
   test-action:
     name: GitHub Actions Test
