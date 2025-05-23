@@ -1,8 +1,8 @@
-name: 'Local Cache'
+name: 'local-cache-action'
 description:
   'Local cache solution designed for self-hosted runners, without relying on
   GitHub remote cache'
-author: 'Your Name'
+author: 'cexa.ai'
 
 # Add your action's branding here. This will appear on the GitHub Marketplace.
 branding:
@@ -41,6 +41,10 @@ inputs:
     description: 'zstd compression level (-5 to 22)'
     required: false
     default: '3'
+  milliseconds:
+    description: 'Time to wait'
+    required: true
+    default: '1000'
 
 # Define your outputs here.
 outputs:
@@ -52,6 +56,8 @@ outputs:
     description:
       'Primary key used to save the cache, typically used for separate restore
       and save operations'
+  time:
+    description: 'The time we waited'
 
 runs:
   using: 'node20'
