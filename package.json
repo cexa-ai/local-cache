@@ -1,10 +1,9 @@
 {
   "name": "typescript-action",
   "description": "GitHub Actions TypeScript template",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "author": "",
   "type": "module",
-  "private": true,
   "homepage": "https://github.com/actions/typescript-action",
   "repository": {
     "type": "git",
@@ -78,5 +77,8 @@
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "*"
   },
-  "main": "jest.config.js"
+  "main": "jest.config.js",
+  "publishConfig": {
+    "access": "public"
+  }
 }

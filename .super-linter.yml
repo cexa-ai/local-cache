@@ -1,14 +1,12 @@
-
-IGNORE_BASH: "true"
-IGNORE_GITHUB_ACTIONS: "true"
-IGNORE_MARKDOWN: "true"
-IGNORE_NATURAL_LANGUAGE: "true"
-IGNORE_SHELL_SHFMT: "true"
-IGNORE_YAML_PRETTIER: "true"
-
+IGNORE_BASH: 'true'
+IGNORE_GITHUB_ACTIONS: 'true'
+IGNORE_MARKDOWN: 'true'
+IGNORE_NATURAL_LANGUAGE: 'true'
+IGNORE_SHELL_SHFMT: 'true'
+IGNORE_YAML_PRETTIER: 'true'
 
 IGNORE_PATTERNS:
-  - "**/node_modules/**"
-  - "**/dist/**"
-  - "**/.git/**"
-  - "**/yarn/**"
+  - '**/node_modules/**'
+  - '**/dist/**'
+  - '**/.git/**'
+  - '**/yarn/**'
